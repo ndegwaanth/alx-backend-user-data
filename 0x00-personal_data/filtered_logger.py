@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-
+"""filterd_logs"""
+import os
 import logging
 import re
+import mysql.connector
 from typing import List
+from mysql.connector import Error
 
 # Define PII_FIELDS constant
 PII_FIELDS = ("name", "email", "ssn", "password", "phone")
@@ -44,14 +47,42 @@ def get_logger() -> logging.Logger:
     stream_handler = logging.StreamHandler()
     formatter = RedactingFormatter(fields=PII_FIELDS)
     stream_handler.setFormatter(formatter)
-
     logger.addHandler(stream_handler)
 
     return logger
 
 
-# Example Usage
-if __name__ == "__main__":
-    logger = get_logger()
-    logger.info("name=John Doe;email=johndoe@example.com;ssn=123-45-6789;"
-                "password=secret;phone=555-555-5555;")
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """Establishes a connection to the MySQL database using credentials
+    from environment variables."""
+    try:
+        # Get database credentials from environment variables
+        user = os.getenv('PERSONAL_DATA_DB_USERNAME', 'root')
+        password = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
+        host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
+        database = os.getenv('PERSONAL_DATA_DB_NAME')
+
+        if database is None:
+            raise ValueError("The environment variable PERSONAL_DATA_DB_NAME"
+                             " must be set.")
+
+        # Establish a connection to the database
+        connection = mysql.connector.connect(
+            user=user,
+            password=password,
+            host=host,
+            database=database
+        )
+
+        if connection.is_connected():
+            print("Connection to the database established successfully.")
+            return connection
+        else:
+            raise Exception("Failed to connect to the database.")
+
+    except Error as e:
+        print(f"Error: {e}")
+        raise
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        raise
