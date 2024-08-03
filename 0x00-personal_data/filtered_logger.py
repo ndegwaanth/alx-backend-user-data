@@ -13,5 +13,6 @@ def filter_datum(fields, redaction, message, separator):
     separator: (string): rep character separating all fields
     in the logline (message)
     """
-    pattern = f"({'|'.join(fields)})=[^{separator}]+"
-    return re.sub(pattern, lambda m: f"{m.group(1)}={redaction}", message)
+    pattern = "({})=[^{}]+".format('|'.join(fields), separator)
+    return re.sub(pattern, lambda m: "{}={}".format(m.group(1),
+                                                    redaction), message)
