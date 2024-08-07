@@ -34,5 +34,6 @@ def unauthorized():
 
 @app_views.route('/forbidden/', methods=['GET'], strict_slashes=False)
 def forbidden():
-    """"""
+    """display forbidden status code 403
+    """
     abort(403)
