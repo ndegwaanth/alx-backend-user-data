@@ -9,6 +9,7 @@ from flask_cors import (CORS, cross_origin)
 import os
 import logging
 from api.v1.auth.auth import Auth
+from api.v1.auth.basic_auth import BasicAuth
 
 
 # logging.basicConfig(level=logging.DEBUG,filename='test.log')
@@ -20,9 +21,6 @@ CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 auth = None
 
 
-AUTH_TYPE = os.getenv('AUTH_TYPE')
-if AUTH_TYPE == 'auth':
-    auth = Auth()
 
 @app.errorhandler(404)
 def not_found(error) -> str:
@@ -56,6 +54,28 @@ def before_request():
         abort(401)
     if auth.current_user(request) is None:
         abort(403)
+
+
+@app.before_request
+def before_request():
+    '''called before any request is implemented
+    '''
+    auth = getenv('AUTH_TYPE')
+    if auth == 'basic_auth':
+        from api.v1.auth.basic_auth import BasicAuth
+        auth = BasicAuth()
+    elif auth is not None:
+        auth = Auth()
+    if auth is not None and auth.require_auth(request.path,
+                                              ['/api/v1/status/',
+                                               '/api/v1/unauthorized/',
+                                               '/api/v1/forbidden/']):
+        header = auth.authorization_header(request)
+        if header is None:
+            abort(401)
+        user = auth.current_user(request)
+        if user is None:
+            abort(403)
 
 
 if __name__ == "__main__":
