@@ -10,6 +10,9 @@ import os
 import logging
 
 
+# logging.basicConfig(level=logging.DEBUG,filename='test.log')
+
+
 app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
@@ -29,12 +32,15 @@ def unauthorized(error) -> str:
 
 
 @app.errorhandler(403)
-def forbidden(error):
+def forbidden(error) -> str:
     """restricted to some resources (403)"""
     return jsonify({"error": "Forbidden"}), 403
 
 
 if __name__ == "__main__":
+    # for rule  in app.url_map.iter_rules():
+    #     print(rule)
+
     host = getenv("API_HOST", "0.0.0.0")
     port = getenv("API_PORT", "5000")
     app.run(host=host, port=port)
