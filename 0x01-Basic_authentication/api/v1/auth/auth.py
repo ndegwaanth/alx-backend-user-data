@@ -7,6 +7,7 @@ from flask import request
 
 user = TypeVar('user')
 
+
 class Auth:
     '''auth class
     '''
