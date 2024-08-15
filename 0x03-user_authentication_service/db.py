@@ -2,11 +2,12 @@
 """1. create user
 """
 from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
-from user import Base, User
-from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import InvalidRequestError
+from sqlalchemy.orm.exc import NoResultFound
+from user import Base, User
 
 
 class DB:
@@ -35,15 +36,15 @@ class DB:
         return user
 
     def find_user_by(self, **kwargs) -> User:
-        """
-        This method takes in arbitrary keyword arguments and returns
-        the first row found in the users table as filtered by the method’s
-        input arguments
+        """Find a user based on a set of filters
+
+        Raises:
+            NoResultFound: When no user is found.
+            InvalidRequestError: When invalid query arguments are provided.
         """
         try:
-            user = self._session.query(User).filter_by(**kwargs).one()
-            return user
-        except NoResultFound as n:
-            print(n)
-        except InvalidRequestError as i:
-            print(i)
+            return self._session.query(User).filter_by(**kwargs).one()
+        except NoResultFound:
+            raise NoResultFound("No user found with the given parameters.")
+        except InvalidRequestError:
+            raise InvalidRequestError("Invalid query arguments provided.")
