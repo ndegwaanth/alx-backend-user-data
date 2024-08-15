@@ -10,7 +10,7 @@ app = Flask(__name__)
 @app.route("/", methods=['GET'])
 def index():
     """returning json payload"""
-    return jsonify('{"message": "Bienvenue"}')
+    return jsonify('{"message": "Bienvenue"}'), 200
 
 
 if __name__ == '__main__':
