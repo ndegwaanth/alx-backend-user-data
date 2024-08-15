@@ -5,6 +5,7 @@ from flask import (Flask,
                    jsonify,
                    abort, make_response, redirect, url_for)
 import flask
+from sqlalchemy.orm.exc import NoResultFound
 from auth import Auth
 
 app = Flask(__name__)
@@ -74,6 +75,39 @@ def logout():
     AUTH.destroy_session(user.id)
 
     return redirect(url_for('index'))
+
+@app.route('/reset_password', methods=['POST'])
+def get_reset_password_token():
+    '''retrieves reset token from user
+    '''
+    email = request.form.get('email')
+    try:
+        token = AUTH.get_reset_password_token(email)
+    except ValueError:
+        abort(403)
+    else:
+        return jsonify({"email": email, "reset_token": token})
+
+@app.route('/reset_password', methods=['PUT'])
+def reset_password():
+    '''resets a user's password
+    '''
+    email = request.form.get('email')
+    reset_token = request.form.get("reset_token")
+    new_password = request.form.get("new_Password")
+    '''saved_request_token = AUTH.get_reset_password_token(email)
+    if saved_reset_token != reset_token:
+        abort(403)
+    AUTH.update_password(reset_token, new_password)'''
+    try:
+        # user = AUTH._db.find_user_by(reset_token=reset_token, email=email)
+        user = AUTH._db.find_user_by(email=email)
+    except NoResultFound:
+        abort(403)
+    else:
+        AUTH.update_password(reset_token, new_password)
+        return jsonify({"email": email, "message": "Password updated"})
+
 
 
 if __name__ == '__main__':

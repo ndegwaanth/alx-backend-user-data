@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 """4. Hash password"""
 import bcrypt
 from db import DB
@@ -114,12 +113,19 @@ class Auth(User):
         """
         try:
             user = self._db.find_user_by(email=email)
+        except NoResultFound:
+            raise ValueError()
+        new_uuid = _generate_uuid()
+        self._db.update_user(user.id, reset_token=new_uuid)
 
-            if not user:
-                raise ValueError()
-
-            new_uuid = _generate_uuid()
-
-            self._db.update_user(user.session_id, session_id=new_uuid)
-        except ValueError:
-            pass
+    def update_password(self, reset_token: str, password: str) -> None:
+        '''updates a user's password
+        '''
+        try:
+            user = self._db.find_user_by(reset_token=reset_token)
+        except NoResultFound:
+            raise ValueError()
+        hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        self._db.update_user(user.id, hashed_password=hashed_pw,
+                             reset_token=None)
+        return None
