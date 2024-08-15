@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""6. Basic Flask app
-"""
-from flask import Flask, jsonify
+"""6. Basic Flask app"""
+from flask import Flask
+import flask
 
 app = Flask(__name__)
 
@@ -9,7 +9,7 @@ app = Flask(__name__)
 @app.route("/", methods=['GET'])
 def index():
     """returning json payload"""
-    return jsonify('{"message": "Bienvenue"}'), 200
+    return flask.jsonify('{"message": "Bienvenue"}'), 200
 
 
 if __name__ == '__main__':
