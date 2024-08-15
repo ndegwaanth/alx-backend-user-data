@@ -32,27 +32,25 @@ def user():
 
 @app.route('/sessions', methods=['POST'])
 def login():
-    """
-    implement a login function to respond to the POST /sessions route.
-    request expected to contain form data with "email" and a "password"fields.
-    If the login information is incorrect, use flask.abort to respond
-    with a 401 HTTP status
-    """
+    """POST /sessions route to log in a user"""
     email = request.form.get('email')
     password = request.form.get('password')
 
     if not email or not password:
         abort(401)
 
-    if AUTH.valid_login(email, password):
+    if not AUTH.valid_login(email, password):
         abort(401)
 
+    # Create session ID
     session_id = AUTH.create_session(email)
     if not session_id:
         abort(401)
 
-    response = make_response(jsonify({"email": email,
-                                      "message": "logged in"}))
+    # Create the response
+    response = make_response(jsonify({"email": email, "message": "logged in"}))
+    # Set session_id in cookie
+    response.set_cookie("session_id", session_id)
 
     return response
 
