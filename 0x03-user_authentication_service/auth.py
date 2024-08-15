@@ -128,4 +128,5 @@ class Auth(User):
         hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         self._db.update_user(user.id, hashed_password=hashed_pw,
                              reset_token=None)
+
         return None
