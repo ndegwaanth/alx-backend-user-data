@@ -67,3 +67,22 @@ class DB:
             raise ValueError('User not found')
         except InvalidRequestError:
             raise ValueError('Invalid request')
+    
+
+    def save_user(self, user):
+        """
+        Save a new user to the database.
+
+        Args:
+            user (User): The User object to be saved.
+
+        Returns:
+            None
+        """
+        # Convert User object to SQLAlchemy model if necessary
+        user_model = User(
+            email=user.email,
+            hashed_password=user.hashed_password
+        )
+        self.session.add(user_model)
+        self.session.commit()
