@@ -21,6 +21,17 @@ def _hash_password(password: str) -> bytes:
     return hashed_password
 
 
+def _generate_uuid() -> str:
+    """
+    implement _generate_uuid function in the auth module
+    The function should
+    return a string representation of a new UUID.
+    Use the uuid module.
+    """
+    random_uuid = str(uuid.uuid4())
+    return random_uuid
+
+
 class Auth(User):
     """
     Auth class to interact with the authentication database.
@@ -53,14 +64,3 @@ class Auth(User):
                                   user.hashed_password)
         except NoResultFound:
             return False
-
-    @staticmethod
-    def _generate_uuid() -> str:
-        """
-         implement _generate_uuid function in the auth module
-         The function should
-         return a string representation of a new UUID.
-         Use the uuid module.
-        """
-        random_uuid = str(uuid.uuid4())
-        return random_uuid
