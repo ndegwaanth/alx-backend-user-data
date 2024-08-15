@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 """4. Hash password"""
 import bcrypt
 from db import DB
@@ -52,10 +53,14 @@ class Auth(User):
                                   user.hashed_password)
         except NoResultFound:
             return False
-    
+
+    @staticmethod
     def _generate_uuid() -> str:
         """
-         implement a _generate_uuid function in the auth module. The function should
-         return a string representation of a new UUID. Use the uuid module.
+         implement _generate_uuid function in the auth module
+         The function should
+         return a string representation of a new UUID.
+         Use the uuid module.
         """
-        return str(uuid.uuid4()) 
+        random_uuid = str(uuid.uuid4())
+        return random_uuid
