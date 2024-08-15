@@ -48,3 +48,21 @@ class DB:
             raise NoResultFound("No user found with the given parameters.")
         except InvalidRequestError:
             raise InvalidRequestError("Invalid query arguments provided.")
+
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """
+        implement the DB.update_user method that takes as argument
+        a required user_id integer and arbitrary keyword arguments,
+        and returns None.
+        """
+        try:
+            user = self.find_user_by(id=user_id)
+            for key, value in kwargs.items():
+                if not hasattr(user, key):
+                    raise ValueError(f"{key} attribute doesn't exist")
+                setattr(user, key, value)
+            self._session.commit()
+        except NoResultFound:
+            raise ValueError('User not found')
+        except InvalidRequestError:
+            raise ValueError('Invalid request')
