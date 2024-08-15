@@ -38,8 +38,8 @@ def login():
     If the login information is incorrect, use flask.abort to respond
     with a 401 HTTP status
     """
-    email = request.form('email')
-    password = request.form('password')
+    email = request.form.get('email')
+    password = request.form.get('password')
 
     if AUTH.valid_login(email, password):
         abort(401)
