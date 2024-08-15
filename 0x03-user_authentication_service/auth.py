@@ -6,6 +6,8 @@ from db import DB
 from user import User
 from sqlalchemy.orm.exc import NoResultFound
 import uuid
+from flask import session
+from typing import Optional
 
 
 def _hash_password(password: str) -> bytes:
@@ -64,3 +66,16 @@ class Auth(User):
                                   user.hashed_password)
         except NoResultFound:
             return False
+
+    def create_session(self, email: str) -> Optional[str]:
+        """
+        implement the Auth.create_session method. It takes an email
+        string argument and returns the session ID as a string.
+        """
+        try:
+            user = self._db.find_user_by(email=email)
+            new_uuid = _generate_uuid()
+            self._db.update_user(user.id, session_id=new_uuid)
+            return new_uuid
+        except NoResultFound:
+            return None
